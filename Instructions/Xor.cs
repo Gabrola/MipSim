@@ -4,23 +4,25 @@ namespace MipSim.Instructions
     {
         private readonly int _rd;
         private readonly int _rs;
-        private readonly int _immediate;
+        private readonly int _rt;
 
         private int _op1;
+        private int _op2;
 
         private int _result;
 
-        public Xor(string instr, int instructionNumber, int rd, int rs, int immediate)
+        public Xor(string instr, int instructionNumber, int rd, int rs, int rt)
             : base(instr, instructionNumber)
         {
             _rd = rd;
             _rs = rs;
-            _immediate = immediate;
+            _rt = rt;
         }
 
         public override void Decode()
         {
             _op1 = CPU.RegRead(_rs);
+            _op2 = CPU.RegRead(_rt);
         }
 
         public override bool Execute()
@@ -36,8 +38,15 @@ namespace MipSim.Instructions
                 else
                     return false; //Else stall
             }
-
-            _result = _op1 ^ _immediate;
+            
+            if (!CPU.IsRegisterReady(_rt))
+            {
+                if (CPU.IsRegisterForwarded(_rt))
+                    _op2 = CPU.GetForwardedRegister(_rt);
+                else
+                    return false; //Stall
+            }
+            _result = _op1 ^ _op2;
 
             return true;
         }
@@ -59,12 +68,12 @@ namespace MipSim.Instructions
 
         public override string GetDecode()
         {
-            return string.Format("Xor Instruction: rd => ${0}, rs => ${1},  {2}", _rd, _rs, _immediate);
+            return string.Format("Xor Instruction: rd => ${0}, rs => ${1},  ${2}", _rd, _rs, _rt);
         }
 
         public override string GetExecute()
         {
-            return string.Format("Xor {0} ^ {1} = {2}", _op1, _immediate, _result);
+            return string.Format("Xor {0} ^ {1} = {2}", _op1, _rt, _result);
         }
 
         public override string GetMem()
