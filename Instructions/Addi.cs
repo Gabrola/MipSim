@@ -57,11 +57,6 @@ namespace MipSim.Instructions
             ClearAwaits();
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("Addi Instruction: rd => ${0}, rs => ${1}, imm => {2}", _rd, _rs, _immediate);
-        }
-
         public override string GetExecute()
         {
             return string.Format("Addi {0} + {1} = {2}", _op1, _immediate, _result);

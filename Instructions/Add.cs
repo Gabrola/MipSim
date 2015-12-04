@@ -67,11 +67,6 @@
             ClearAwaits();
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("Add Instruction: rd => ${0}, rs => ${1}, rt = ${2}", _rd, _rs, _rt);
-        }
-
         public override string GetExecute()
         {
             return string.Format("Add {0} + {1} = {2}", _op1, _op2, _result);

@@ -31,11 +31,6 @@
             
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("J Instruction: imm => {0}", JumpData.Address);
-        }
-
         public override string GetExecute()
         {
             return "None";

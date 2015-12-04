@@ -51,11 +51,6 @@
             CPU.RegWrite(_rt, _result);
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("LW Instruction: rt => ${0}, offset => {1}, rs => ${2}", _rt, _offset, _rs);
-        }
-
         public override string GetExecute()
         {
             return string.Format("LW Address -> {0} + Offset -> {1}", _base, _offset);

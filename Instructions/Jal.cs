@@ -34,11 +34,6 @@ namespace MipSim.Instructions
             ClearAwaits();
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("Jal Instruction: imm => {0}", _address);
-        }
-
         public override string GetExecute()
         {
             return "None";

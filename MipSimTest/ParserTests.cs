@@ -127,8 +127,8 @@ namespace MipSimTest
             {
                 var instruction = Parser.ParseInstruction(instructionPair.Key, 0);
 
-                Assert.AreEqual(instruction.GetInstructionType(), instructionPair.Value.Item1);
-                Assert.AreEqual(instruction.GetDecodeFields(), instructionPair.Value.Item2);
+                Assert.AreEqual(instructionPair.Value.Item1, instruction.GetInstructionType());
+                Assert.AreEqual(instructionPair.Value.Item2, instruction.GetDecodeFields());
             }
         }
     }

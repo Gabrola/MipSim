@@ -35,6 +35,8 @@ namespace MipSim
             InstructionQueue = new Queue<Instruction>();
             AwaitingRegisters = new HashSet<int>();
             ForwardedRegisters = new Dictionary<int, int>();
+
+            RegisterFile.Write(0, 0);
         }
 
         public static bool IsReady { get; private set; }
@@ -59,6 +61,11 @@ namespace MipSim
                 IsReady = true;
 
             return errors;
+        }
+
+        public static void AddInstruction(Instruction instruction)
+        {
+            Instructions.Add(instruction);
         }
 
         public static void RunClock()

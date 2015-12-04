@@ -27,11 +27,6 @@
         {
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("RP Instruction: Address => {0}", JumpData.Address);
-        }
-
         public override string GetExecute()
         {
             return "None";

@@ -56,11 +56,6 @@
         {
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("SW Instruction: rt => ${0}, offset => {1}, rs => ${2}", _rt, _offset, _rs);
-        }
-
         public override string GetExecute()
         {
             return string.Format("SW Address -> {0} + Offset -> {1}", _base, _offset);

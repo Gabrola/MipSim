@@ -66,11 +66,6 @@ namespace MipSim.Instructions
             ClearAwaits();
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("Xor Instruction: rd => ${0}, rs => ${1},  ${2}", _rd, _rs, _rt);
-        }
-
         public override string GetExecute()
         {
             return string.Format("Xor {0} ^ {1} = {2}", _op1, _rt, _result);

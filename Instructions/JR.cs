@@ -30,11 +30,6 @@
         {
         }
 
-        public override string GetDecode()
-        {
-            return string.Format("JR Instruction: rs => ${0} = {1}", _rs, JumpData.Address);
-        }
-
         public override string GetExecute()
         {
             return "None";

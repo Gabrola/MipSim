@@ -80,7 +80,10 @@
 
         public abstract void WriteBack();
 
-        public abstract string GetDecode();
+        public string GetDecode()
+        {
+            return GetInstructionType() + ": " + GetDecodeFields();
+        }
 
         public abstract string GetExecute();
 
