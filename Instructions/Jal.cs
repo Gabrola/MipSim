@@ -27,7 +27,7 @@ namespace MipSim.Instructions
 
         public override void WriteBack()
         {
-            CPU.RegWrite(31, _address<<2);
+            CPU.RegWrite(15, _address<<2);
 
             //At this point we have written the value to the register in first half of
             //the clock cycle so it should available from the register file directly
@@ -51,7 +51,7 @@ namespace MipSim.Instructions
 
         public override string GetWriteback()
         {
-            return "None";
+            return string.Format("Register $15 <= {0}", _address<<2);
         }
 
         public override string GetInstructionType()
