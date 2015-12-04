@@ -66,6 +66,7 @@ namespace MipSim
         public static void AddInstruction(Instruction instruction)
         {
             Instructions.Add(instruction);
+            IsReady = true;
         }
 
         public static void RunClock()

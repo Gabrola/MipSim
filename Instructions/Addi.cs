@@ -59,7 +59,7 @@ namespace MipSim.Instructions
 
         public override string GetExecute()
         {
-            return string.Format("Addi {0} + {1} = {2}", _op1, _immediate, _result);
+            return string.Format("Add {0} + {1} = {2}", _op1, _immediate, _result);
         }
 
         public override string GetMem()
@@ -79,7 +79,7 @@ namespace MipSim.Instructions
 
         public override string GetDecodeFields()
         {
-            return string.Format("rd = ${0}, rs = ${1}, imm = ${2}", _rd, _rs, _immediate);
+            return string.Format("rd = ${0}, rs = ${1}, imm = {2}", _rd, _rs, _immediate);
         }
     }
 }
