@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MipSim;
-using MipSim.Instructions;
 
 namespace MipSimTest
 {
@@ -87,6 +86,39 @@ namespace MipSimTest
                 { "xor $1, $2, $3", Tuple.Create("Xor", "rd = $1, rs = $2, rt = $3") },
                 { "XoR $1,$2,$3", Tuple.Create("Xor", "rd = $1, rs = $2, rt = $3") },
             });
+        }
+
+        [TestMethod]
+        public void TestParseSyntaxErrors()
+        {
+            string[] instructions =
+            {
+                "xnor",
+                "add $0, $1 $2",
+                "add $0, 10, $2",
+                "addi $0, $1, $2",
+                "add $0 $1 $2",
+                "j $0",
+                "add $0, $1, $100",
+                "",
+            };
+
+            foreach (var instruction in instructions)
+            {
+                try
+                {
+                    Parser.ParseInstruction(instruction, 0);
+
+                    Assert.Fail();
+                }
+                catch (ParserException)
+                {
+                }
+                catch (Exception)
+                {
+                    Assert.Fail();
+                }
+            }
         }
 
         private void TestParse(Dictionary<string, Tuple<string, string>> instructionDictionary)
