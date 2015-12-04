@@ -1,6 +1,6 @@
 namespace MipSim.Instructions
 {
-    class Xor : Instruction
+    public class Xor : Instruction
     {
         private readonly int _rd;
         private readonly int _rs;
@@ -89,6 +89,11 @@ namespace MipSim.Instructions
         public override string GetInstructionType()
         {
             return "Xor";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("rd = ${0}, rs = ${1}, rt = ${2}", _rd, _rs, _rt);
         }
     }
 }

@@ -55,10 +55,14 @@
     <Compile Include="GUI.Designer.cs">
       <DependentUpon>GUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Instructions\Addi.cs" />
     <Compile Include="Instructions\Instruction.cs" />
+    <Compile Include="Instructions\J.cs" />
+    <Compile Include="Instructions\Jal.cs" />
     <Compile Include="Instructions\JR.cs" />
     <Compile Include="Instructions\JumpProcedure.cs" />
     <Compile Include="Instructions\LW.cs" />
+    <Compile Include="Instructions\Xor.cs" />
     <Compile Include="JumpData.cs" />
     <Compile Include="JumpType.cs" />
     <Compile Include="Parser.cs" />

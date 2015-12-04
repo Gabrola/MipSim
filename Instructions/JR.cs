@@ -1,6 +1,6 @@
 ﻿namespace MipSim.Instructions
 {
-    class JR : Instruction
+    public class JR : Instruction
     {
         private readonly int _rs;
 
@@ -53,6 +53,11 @@
         public override string GetInstructionType()
         {
             return "JR";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("rs = ${0}", _rs);
         }
     }
 }

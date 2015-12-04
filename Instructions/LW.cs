@@ -1,6 +1,6 @@
 ﻿namespace MipSim.Instructions
 {
-    class LW : Instruction
+    public class LW : Instruction
     {
         private readonly int _rs;
         private readonly int _rt;
@@ -74,6 +74,11 @@
         public override string GetInstructionType()
         {
             return "LW";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("rs = ${0}, rt = ${1}, imm = {2}", _rs, _rt, _offset);
         }
     }
 }

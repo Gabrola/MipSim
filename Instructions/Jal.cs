@@ -1,6 +1,6 @@
 namespace MipSim.Instructions
 {
-    class Jal : Instruction
+    public class Jal : Instruction
     {
         private readonly int _address;
 
@@ -36,7 +36,7 @@ namespace MipSim.Instructions
 
         public override string GetDecode()
         {
-            return string.Format("Jal Instruction: address => {0}", _address<<2);
+            return string.Format("Jal Instruction: imm => {0}", _address);
         }
 
         public override string GetExecute()
@@ -57,6 +57,11 @@ namespace MipSim.Instructions
         public override string GetInstructionType()
         {
             return "Jal";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("imm = {0}", _address);
         }
     }
 }

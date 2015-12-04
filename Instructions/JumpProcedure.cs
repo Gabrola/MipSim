@@ -1,6 +1,6 @@
 ﻿namespace MipSim.Instructions
 {
-    class JumpProcedure : Instruction
+    public class JumpProcedure : Instruction
     {
         public JumpProcedure(string instr, int instructionNumber, int address)
             : base (instr, instructionNumber)
@@ -50,6 +50,11 @@
         public override string GetInstructionType()
         {
             return "JP";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("imm = {0}", JumpData.Address);
         }
     }
 }

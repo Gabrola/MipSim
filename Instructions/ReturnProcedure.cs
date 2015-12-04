@@ -1,6 +1,6 @@
 ﻿namespace MipSim.Instructions
 {
-    class ReturnProcedure : Instruction
+    public class ReturnProcedure : Instruction
     {
         public ReturnProcedure(string instr, int instructionNumber)
             : base (instr, instructionNumber)
@@ -50,6 +50,11 @@
         public override string GetInstructionType()
         {
             return "RP";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("");
         }
     }
 }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MipSim.Instructions
+﻿namespace MipSim.Instructions
 {
-    class J : Instruction
+    public class J : Instruction
     {
         int _address;
         public J(string instr, int instructionNumber, int address)
@@ -39,7 +33,7 @@ namespace MipSim.Instructions
 
         public override string GetDecode()
         {
-            return string.Format("J Instruction: address => PC = {0}", JumpData.Address);
+            return string.Format("J Instruction: imm => {0}", JumpData.Address);
         }
 
         public override string GetExecute()
@@ -60,6 +54,11 @@ namespace MipSim.Instructions
         public override string GetInstructionType()
         {
             return "J";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("imm = {0}", JumpData.Address);
         }
     }
 }

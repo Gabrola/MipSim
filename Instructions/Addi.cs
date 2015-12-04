@@ -1,6 +1,6 @@
 namespace MipSim.Instructions
 {
-    class ADDI : Instruction
+    public class ADDI : Instruction
     {
         private readonly int _rd;
         private readonly int _rs;
@@ -59,7 +59,7 @@ namespace MipSim.Instructions
 
         public override string GetDecode()
         {
-            return string.Format("Addi Instruction: rd => ${0}, rs => ${1},  {2}", _rd, _rs, _immediate);
+            return string.Format("Addi Instruction: rd => ${0}, rs => ${1}, imm => {2}", _rd, _rs, _immediate);
         }
 
         public override string GetExecute()
@@ -80,6 +80,11 @@ namespace MipSim.Instructions
         public override string GetInstructionType()
         {
             return "Addi";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("rd = ${0}, rs = ${1}, imm = ${2}", _rd, _rs, _immediate);
         }
     }
 }

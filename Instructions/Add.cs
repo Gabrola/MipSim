@@ -1,6 +1,6 @@
 ﻿namespace MipSim.Instructions
 {
-    class Add : Instruction
+    public class Add : Instruction
     {
         private readonly int _rd;
         private readonly int _rs;
@@ -90,6 +90,11 @@
         public override string GetInstructionType()
         {
             return "Add";
+        }
+
+        public override string GetDecodeFields()
+        {
+            return string.Format("rd = ${0}, rs = ${1}, rt = ${2}", _rd, _rs, _rt);
         }
     }
 }

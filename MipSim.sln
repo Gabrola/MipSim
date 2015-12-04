@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MipSim", "MipSim.csproj", "{F8E5BCF3-75BF-4867-9EE6-7B237BCB62D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MipSimTest", "MipSimTest\MipSimTest.csproj", "{48A453E3-75BE-49E0-B51F-C920CF9C3F33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{F8E5BCF3-75BF-4867-9EE6-7B237BCB62D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8E5BCF3-75BF-4867-9EE6-7B237BCB62D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8E5BCF3-75BF-4867-9EE6-7B237BCB62D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48A453E3-75BE-49E0-B51F-C920CF9C3F33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48A453E3-75BE-49E0-B51F-C920CF9C3F33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48A453E3-75BE-49E0-B51F-C920CF9C3F33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48A453E3-75BE-49E0-B51F-C920CF9C3F33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

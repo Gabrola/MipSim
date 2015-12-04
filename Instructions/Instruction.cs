@@ -90,6 +90,8 @@
 
         public abstract string GetInstructionType();
 
+        public abstract string GetDecodeFields();
+
         public JumpData JumpData { get; protected set; }
 
         public int WriteAwaiting { get; protected set; }
