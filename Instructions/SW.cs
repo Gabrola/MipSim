@@ -58,7 +58,7 @@
 
         public override string GetExecute()
         {
-            return string.Format("SW Address -> {0} + Offset -> {1}", _base, _offset);
+            return string.Format("SW Address = {0} + {1} = {2}", _base, _offset, _base + _offset);
         }
 
         public override string GetMem()

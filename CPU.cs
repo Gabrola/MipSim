@@ -149,12 +149,12 @@ namespace MipSim
 
         public int Load(int address)
         {
-            return DataMemory.Read(address);
+            return DataMemory.Read(address >> 2);
         }
 
         public void Store(int address, int value)
         {
-            DataMemory.Write(address, value);
+            DataMemory.Write(address >> 2, value);
         }
 
         public int RegRead(int register)
@@ -190,6 +190,11 @@ namespace MipSim
         public int StackPop()
         {
             return Stack.Pop();
+        }
+
+        public int StackPeek()
+        {
+            return Stack.Peek();
         }
 
         public int GetPC()

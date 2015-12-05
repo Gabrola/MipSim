@@ -29,5 +29,13 @@ namespace MipSim.CPUComponents
 
             return _stack[--_current];
         }
+
+        public int Peek()
+        {
+            if (_current == 0)
+                throw new InvalidOperationException("Stack is empty");
+
+            return _stack[_current - 1];
+        }
     }
 }

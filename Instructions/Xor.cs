@@ -46,6 +46,7 @@ namespace MipSim.Instructions
                 else
                     return false; //Stall
             }
+
             _result = _op1 ^ _op2;
 
             return true;
@@ -68,7 +69,7 @@ namespace MipSim.Instructions
 
         public override string GetExecute()
         {
-            return string.Format("Xor {0} ^ {1} = {2}", _op1, _rt, _result);
+            return string.Format("Xor {0} ^ {1} = {2}", _op1, _op2, _result);
         }
 
         public override string GetMem()
