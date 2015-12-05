@@ -1,17 +1,14 @@
 ﻿namespace MipSim.Instructions
 {
-    public class JumpProcedure : Instruction
+    public class Nop : Instruction
     {
-        public JumpProcedure(string instr, int instructionNumber, int address)
-            : base (instr, instructionNumber)
+        public Nop(string instr, int instructionNumber)
+            : base(instr, instructionNumber)
         {
-            JumpData = new JumpData { Type = JumpType.Jump, Address = address, IsJumpTaken = false };
         }
 
         public override void Decode()
         {
-            CPU.Instance.StackPush(CPU.Instance.GetPC());
-            JumpData.IsJumpTaken = true;
         }
 
         public override bool Execute()
@@ -29,27 +26,27 @@
 
         public override string GetExecute()
         {
-            return "None";
+            return "";
         }
 
         public override string GetMem()
         {
-            return "None";
+            return "";
         }
 
         public override string GetWriteback()
         {
-            return "None";
+            return "";
         }
 
         public override string GetInstructionType()
         {
-            return "JP";
+            return "Nop";
         }
 
         public override string GetDecodeFields()
         {
-            return string.Format("imm = {0}", JumpData.Address);
+            return "";
         }
     }
 }

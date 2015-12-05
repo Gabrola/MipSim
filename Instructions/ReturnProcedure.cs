@@ -5,12 +5,12 @@
         public ReturnProcedure(string instr, int instructionNumber)
             : base (instr, instructionNumber)
         {
-            JumpData = new JumpData { Type = JumpType.Jump, IsJumpTaken = false };
+            JumpData = new JumpData { Type = JumpType.JumpDirect, IsJumpTaken = false };
         }
 
         public override void Decode()
         {
-            JumpData.Address = CPU.StackPop();
+            JumpData.Address = CPU.Instance.StackPop();
             JumpData.IsJumpTaken = true;
         }
 

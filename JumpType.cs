@@ -3,6 +3,7 @@
     public enum JumpType
     {
         Jump,
-        Branch
+        Branch,
+        JumpDirect
     }
 }

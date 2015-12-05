@@ -8,12 +8,12 @@
             : base (instr, instructionNumber)
         {
             _rs = rs;
-            JumpData = new JumpData { Type = JumpType.Jump, IsJumpTaken = false };
+            JumpData = new JumpData { Type = JumpType.JumpDirect, IsJumpTaken = false };
         }
 
         public override void Decode()
         {
-            JumpData.Address = CPU.RegRead(_rs);
+            JumpData.Address = CPU.Instance.RegRead(_rs);
             JumpData.IsJumpTaken = true;
         }
 

@@ -20,18 +20,18 @@
 
         public override void Decode()
         {
-            _base = CPU.RegRead(_rs);
+            _base = CPU.Instance.RegRead(_rs);
         }
 
         public override bool Execute()
         {
             WriteAwaiting = _rt;
 
-            if (!CPU.IsRegisterReady(_rs))
+            if (!CPU.Instance.IsRegisterReady(_rs))
             {
                 //Check if value has been forwarded
-                if (CPU.IsRegisterForwarded(_rs))
-                    _base = CPU.GetForwardedRegister(_rs);
+                if (CPU.Instance.IsRegisterForwarded(_rs))
+                    _base = CPU.Instance.GetForwardedRegister(_rs);
                 else
                     return false; //Else stall
             }
@@ -41,14 +41,14 @@
 
         public override void MemoryOp()
         {
-            _result = CPU.Load(_base + _offset);
+            _result = CPU.Instance.Load(_base + _offset);
         }
 
         public override void WriteBack()
         {
             ForwardedRegister = _result;
 
-            CPU.RegWrite(_rt, _result);
+            CPU.Instance.RegWrite(_rt, _result);
         }
 
         public override string GetExecute()

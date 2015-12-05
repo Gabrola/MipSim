@@ -21,8 +21,8 @@ namespace MipSim.Instructions
 
         public override void Decode()
         {
-            _op1 = CPU.RegRead(_rs);
-            _op2 = CPU.RegRead(_rt);
+            _op1 = CPU.Instance.RegRead(_rs);
+            _op2 = CPU.Instance.RegRead(_rt);
         }
 
         public override bool Execute()
@@ -30,19 +30,19 @@ namespace MipSim.Instructions
             WriteAwaiting = _rd;
 
             //Some previous instruction has not written value to register yet
-            if (!CPU.IsRegisterReady(_rs))
+            if (!CPU.Instance.IsRegisterReady(_rs))
             {
                 //Check if value has been forwarded
-                if (CPU.IsRegisterForwarded(_rs))
-                    _op1 = CPU.GetForwardedRegister(_rs);
+                if (CPU.Instance.IsRegisterForwarded(_rs))
+                    _op1 = CPU.Instance.GetForwardedRegister(_rs);
                 else
                     return false; //Else stall
             }
             
-            if (!CPU.IsRegisterReady(_rt))
+            if (!CPU.Instance.IsRegisterReady(_rt))
             {
-                if (CPU.IsRegisterForwarded(_rt))
-                    _op2 = CPU.GetForwardedRegister(_rt);
+                if (CPU.Instance.IsRegisterForwarded(_rt))
+                    _op2 = CPU.Instance.GetForwardedRegister(_rt);
                 else
                     return false; //Stall
             }
@@ -59,7 +59,7 @@ namespace MipSim.Instructions
 
         public override void WriteBack()
         {
-            CPU.RegWrite(_rd, _result);
+            CPU.Instance.RegWrite(_rd, _result);
 
             //At this point we have written the value to the register in first half of
             //the clock cycle so it should available from the register file directly

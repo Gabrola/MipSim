@@ -2,17 +2,14 @@
 {
     public class J : Instruction
     {
-        int _address;
         public J(string instr, int instructionNumber, int address)
             : base(instr, instructionNumber)
         {
-            _address = address;
             JumpData = new JumpData { Type = JumpType.Jump, Address = address, IsJumpTaken = false };
         }
 
         public override void Decode()
         {
-            JumpData.Address = _address;
             JumpData.IsJumpTaken = true;
         }
 

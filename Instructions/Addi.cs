@@ -1,6 +1,6 @@
 namespace MipSim.Instructions
 {
-    public class ADDI : Instruction
+    public class Addi : Instruction
     {
         private readonly int _rd;
         private readonly int _rs;
@@ -10,7 +10,7 @@ namespace MipSim.Instructions
 
         private int _result;
 
-        public ADDI(string instr, int instructionNumber, int rd, int rs, int immediate)
+        public Addi(string instr, int instructionNumber, int rd, int rs, int immediate)
             : base(instr, instructionNumber)
         {
             _rd = rd;
@@ -20,7 +20,7 @@ namespace MipSim.Instructions
 
         public override void Decode()
         {
-            _op1 = CPU.RegRead(_rs);
+            _op1 = CPU.Instance.RegRead(_rs);
         }
 
         public override bool Execute()
@@ -28,11 +28,11 @@ namespace MipSim.Instructions
             WriteAwaiting = _rd;
 
             //Some previous instruction has not written value to register yet
-            if (!CPU.IsRegisterReady(_rs))
+            if (!CPU.Instance.IsRegisterReady(_rs))
             {
                 //Check if value has been forwarded
-                if (CPU.IsRegisterForwarded(_rs))
-                    _op1 = CPU.GetForwardedRegister(_rs);
+                if (CPU.Instance.IsRegisterForwarded(_rs))
+                    _op1 = CPU.Instance.GetForwardedRegister(_rs);
                 else
                     return false; //Else stall
             }
@@ -50,7 +50,7 @@ namespace MipSim.Instructions
 
         public override void WriteBack()
         {
-            CPU.RegWrite(_rd, _result);
+            CPU.Instance.RegWrite(_rd, _result);
 
             //At this point we have written the value to the register in first half of
             //the clock cycle so it should available from the register file directly

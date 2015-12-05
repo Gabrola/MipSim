@@ -62,6 +62,7 @@
     <Compile Include="Instructions\JR.cs" />
     <Compile Include="Instructions\JumpProcedure.cs" />
     <Compile Include="Instructions\LW.cs" />
+    <Compile Include="Instructions\Nop.cs" />
     <Compile Include="Instructions\Xor.cs" />
     <Compile Include="JumpData.cs" />
     <Compile Include="JumpType.cs" />

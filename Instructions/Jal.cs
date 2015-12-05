@@ -2,18 +2,19 @@ namespace MipSim.Instructions
 {
     public class Jal : Instruction
     {
-        private readonly int _address;
+        private int _returnAddress;
 
         public Jal(string instr, int instructionNumber, int address)
             : base(instr, instructionNumber)
         {
-            JumpData = new JumpData { Type = JumpType.Jump, IsJumpTaken = false };
+            JumpData = new JumpData { Type = JumpType.Jump, IsJumpTaken = false, Address = address };
         }
 
         public override void Decode()
         {
-            JumpData.Address = _address;
             JumpData.IsJumpTaken = true;
+
+            _returnAddress = CPU.Instance.GetPC();
         }
 
         public override bool Execute()
@@ -27,7 +28,7 @@ namespace MipSim.Instructions
 
         public override void WriteBack()
         {
-            CPU.RegWrite(15, _address<<2);
+            CPU.Instance.RegWrite(15, _returnAddress);
 
             //At this point we have written the value to the register in first half of
             //the clock cycle so it should available from the register file directly
@@ -46,7 +47,7 @@ namespace MipSim.Instructions
 
         public override string GetWriteback()
         {
-            return string.Format("Register $15 <= {0}", _address<<2);
+            return string.Format("Register $15 <= {0}", _returnAddress);
         }
 
         public override string GetInstructionType()
@@ -56,7 +57,7 @@ namespace MipSim.Instructions
 
         public override string GetDecodeFields()
         {
-            return string.Format("imm = {0}", _address);
+            return string.Format("imm = {0}", JumpData.Address);
         }
     }
 }
