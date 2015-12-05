@@ -12,7 +12,7 @@ namespace MipSim
         private readonly InstructionMemory Instructions;
         private readonly ProcedureStack Stack;
 
-        private int _clockCycle;
+        public int ClockCycle { get; private set; }
         private int _instructionExecution;
         private bool _isStalled;
 
@@ -34,7 +34,7 @@ namespace MipSim
 
             IsReady = false;
 
-            _clockCycle = 0;
+            ClockCycle = 0;
             _instructionExecution = 0;
             _isStalled = false;
 
@@ -90,7 +90,7 @@ namespace MipSim
 
             if (PC.ArrayCounter < Instructions.Count && !_isStalled)
             {
-                Instructions[PC.ArrayCounter].Initialize(_clockCycle);
+                Instructions[PC.ArrayCounter].Initialize(ClockCycle);
                 InstructionQueue.Enqueue(Instructions[PC.ArrayCounter]);
                 InstructionExecutionDictionary[Instructions[PC.ArrayCounter].InstructionNumber] = _instructionExecution++;
             }
@@ -158,7 +158,7 @@ namespace MipSim
             if (!isJumpTaken && !_isStalled)
                 PC.Advance();
 
-            _clockCycle++;
+            ClockCycle++;
         }
 
         public void AddExecutionRecord(Instruction instruction)
@@ -166,19 +166,19 @@ namespace MipSim
             switch (instruction.RelativeClock)
             {
                 case 0:
-                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instruction.GetFetch(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instruction.GetFetch(), InstructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 1:
-                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, instruction.GetDecode(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Decode, instruction.GetDecode(), InstructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 2:
-                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, instruction.GetExecute(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Execute, instruction.GetExecute(), InstructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 3:
-                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, instruction.GetMem(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Memory, instruction.GetMem(), InstructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 4:
-                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, instruction.GetWriteback(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, instruction.GetWriteback(), InstructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
             }
         }

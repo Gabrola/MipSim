@@ -23,45 +23,55 @@ namespace MipSimTest
             cpu.AddInstruction(new Add(instr1, 2, 3, 2, 0));
 
             var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
             expectedRecords.Add(new ExecutionRecordList());
-            expectedRecords[0].Add(new ExecutionRecord(ExecutionType.Fetch, instr0, 0));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr0, 0));
+            clockCycle++;
             Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
             expectedRecords.Add(new ExecutionRecordList());
-            expectedRecords[1].Add(new ExecutionRecord(ExecutionType.Decode, "LW: rs = $1, rt = $2, imm = 0", 0));
-            expectedRecords[1].Add(new ExecutionRecord(ExecutionType.Fetch, instr1, 1));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "LW: rs = $1, rt = $2, imm = 0", 0));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr1, 1));
+            clockCycle++;
             Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
             expectedRecords.Add(new ExecutionRecordList());
-            expectedRecords[2].Add(new ExecutionRecord(ExecutionType.Execute, "LW Address = 0 + 0 = 0", 0));
-            expectedRecords[2].Add(new ExecutionRecord(ExecutionType.Decode, "Add: rd = $3, rs = $2, rt = $0", 1));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "LW Address = 0 + 0 = 0", 0));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Add: rd = $3, rs = $2, rt = $0", 1));
+            clockCycle++;
             Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
             expectedRecords.Add(new ExecutionRecordList());
-            expectedRecords[3].Add(new ExecutionRecord(ExecutionType.Memory, "Memory access result = 100", 0));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "Memory access result = 100", 0));
+            clockCycle++;
             //STALL LOCATION
             Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
             expectedRecords.Add(new ExecutionRecordList());
-            expectedRecords[4].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $2 <= 100", 0));
-            expectedRecords[4].Add(new ExecutionRecord(ExecutionType.Execute, "Add 100 + 0 = 100", 1));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $2 <= 100", 0));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "Add 100 + 0 = 100", 1));
+            clockCycle++;
             Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
             expectedRecords.Add(new ExecutionRecordList());
-            expectedRecords[5].Add(new ExecutionRecord(ExecutionType.Memory, "None", 1));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "None", 1));
+            clockCycle++;
             Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
             expectedRecords.Add(new ExecutionRecordList());
-            expectedRecords[6].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $3 <= 100", 1));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $3 <= 100", 1));
+            clockCycle++;
             Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
     }
 }
