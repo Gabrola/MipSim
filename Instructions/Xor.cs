@@ -19,10 +19,12 @@ namespace MipSim.Instructions
             _rt = rt;
         }
 
-        public override void Decode()
+        public override bool Decode()
         {
             _op1 = CPU.Instance.RegRead(_rs);
             _op2 = CPU.Instance.RegRead(_rt);
+
+            return true;
         }
 
         public override bool Execute()
@@ -61,10 +63,7 @@ namespace MipSim.Instructions
         public override void WriteBack()
         {
             CPU.Instance.RegWrite(_rd, _result);
-
-            //At this point we have written the value to the register in first half of
-            //the clock cycle so it should available from the register file directly
-            ClearAwaits();
+            ClearAwaiting = true;
         }
 
         public override string GetExecute()

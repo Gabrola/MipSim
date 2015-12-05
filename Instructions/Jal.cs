@@ -10,15 +10,20 @@ namespace MipSim.Instructions
             JumpData = new JumpData { Type = JumpType.Jump, IsJumpTaken = false, Address = address };
         }
 
-        public override void Decode()
+        public override bool Decode()
         {
             JumpData.IsJumpTaken = true;
 
             _returnAddress = CPU.Instance.GetPC();
+
+            return true;
         }
 
         public override bool Execute()
         {
+            WriteAwaiting = 15;
+            ForwardedRegister = _returnAddress;
+
             return true;
         }
 
@@ -29,10 +34,7 @@ namespace MipSim.Instructions
         public override void WriteBack()
         {
             CPU.Instance.RegWrite(15, _returnAddress);
-
-            //At this point we have written the value to the register in first half of
-            //the clock cycle so it should available from the register file directly
-            ClearAwaits();
+            ClearAwaiting = true;
         }
 
         public override string GetExecute()

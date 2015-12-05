@@ -11,10 +11,22 @@
             JumpData = new JumpData { Type = JumpType.JumpDirect, IsJumpTaken = false };
         }
 
-        public override void Decode()
+        public override bool Decode()
         {
             JumpData.Address = CPU.Instance.RegRead(_rs);
+
+            if (!CPU.Instance.IsRegisterReady(_rs))
+            {
+                //Check if value has been forwarded
+                if (CPU.Instance.IsRegisterForwarded(_rs))
+                    JumpData.Address = CPU.Instance.GetForwardedRegister(_rs);
+                else
+                    return false; //Else stall
+            }
+
             JumpData.IsJumpTaken = true;
+
+            return true;
         }
 
         public override bool Execute()

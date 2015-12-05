@@ -7,8 +7,9 @@
         {
         }
 
-        public override void Decode()
+        public override bool Decode()
         {
+            return true;
         }
 
         public override bool Execute()

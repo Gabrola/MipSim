@@ -114,6 +114,9 @@ namespace MipSim
                 if (instruction.ForwardedRegister.HasValue)
                     ForwardedRegisters[instruction.WriteAwaiting] = instruction.ForwardedRegister.Value;
 
+                if(instruction.ClearAwaiting)
+                    instruction.ClearAwaits();
+
                 if (instruction.JumpData != null && !isJumpTaken)
                 {
                     var jumpData = instruction.JumpData;

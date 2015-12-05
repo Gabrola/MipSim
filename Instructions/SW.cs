@@ -18,10 +18,12 @@
             _offset = offset;
         }
 
-        public override void Decode()
+        public override bool Decode()
         {
             _base = CPU.Instance.RegRead(_rs);
             _data = CPU.Instance.RegRead(_rt);
+
+            return true;
         }
 
         public override bool Execute()

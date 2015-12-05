@@ -8,10 +8,12 @@
             JumpData = new JumpData { Type = JumpType.Jump, Address = address, IsJumpTaken = false };
         }
 
-        public override void Decode()
+        public override bool Decode()
         {
             CPU.Instance.StackPush(CPU.Instance.GetPC());
             JumpData.IsJumpTaken = true;
+
+            return true;
         }
 
         public override bool Execute()

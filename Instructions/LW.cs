@@ -18,9 +18,11 @@
             _offset = offset;
         }
 
-        public override void Decode()
+        public override bool Decode()
         {
             _base = CPU.Instance.RegRead(_rs);
+
+            return true;
         }
 
         public override bool Execute()
@@ -49,6 +51,7 @@
             ForwardedRegister = _result;
 
             CPU.Instance.RegWrite(_rt, _result);
+            ClearAwaiting = true;
         }
 
         public override string GetExecute()

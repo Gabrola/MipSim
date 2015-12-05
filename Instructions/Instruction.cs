@@ -18,6 +18,7 @@
             WriteAwaiting = -1;
             ForwardedRegister = null;
             JumpData = null;
+            ClearAwaiting = false;
         }
 
         public void Initialize(int clockCycle)
@@ -40,7 +41,11 @@
                     return true;
 
                 case 1:
-                    Decode();
+                    if (!Decode())
+                    {
+                        RelativeClock--;
+                        return false;
+                    }
                     return true;
 
                 case 2:
@@ -70,9 +75,10 @@
         {
             WriteAwaiting = -1;
             ForwardedRegister = null;
+            ClearAwaiting = false;
         }
 
-        public abstract void Decode();
+        public abstract bool Decode();
 
         public abstract bool Execute();
 
@@ -100,5 +106,7 @@
         public int WriteAwaiting { get; protected set; }
 
         public int? ForwardedRegister { get; protected set; }
+
+        public bool ClearAwaiting { get; set; }
     }
 }
