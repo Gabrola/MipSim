@@ -13,11 +13,14 @@ namespace MipSim
         private readonly ProcedureStack Stack;
 
         private int _clockCycle;
+        private int _instructionExecution;
         private bool _isStalled;
 
         private readonly Queue<Instruction> InstructionQueue;
         private readonly HashSet<int> AwaitingRegisters;
         private readonly Dictionary<int, int> ForwardedRegisters;
+        private readonly Dictionary<int, int> InstructionExecutionDictionary;
+        public readonly List<ExecutionRecordList> ExecutionRecords; 
 
         public static CPU Instance;
 
@@ -32,11 +35,14 @@ namespace MipSim
             IsReady = false;
 
             _clockCycle = 0;
+            _instructionExecution = 0;
             _isStalled = false;
 
             InstructionQueue = new Queue<Instruction>();
             AwaitingRegisters = new HashSet<int>();
             ForwardedRegisters = new Dictionary<int, int>();
+            InstructionExecutionDictionary = new Dictionary<int, int>();
+            ExecutionRecords = new List<ExecutionRecordList>();
 
             RegisterFile.Write(0, 0);
 
@@ -86,6 +92,7 @@ namespace MipSim
             {
                 Instructions[PC.ArrayCounter].Initialize(_clockCycle);
                 InstructionQueue.Enqueue(Instructions[PC.ArrayCounter]);
+                InstructionExecutionDictionary[Instructions[PC.ArrayCounter].InstructionNumber] = _instructionExecution++;
             }
 
             Instruction[] instructionQueueArray = InstructionQueue.ToArray();
@@ -93,6 +100,8 @@ namespace MipSim
             bool isJumpTaken = false;
             int jumpIndex = 0;
             _isStalled = false;
+
+            ExecutionRecords.Add(new ExecutionRecordList());
 
             //Run other stages for previous instructions in queue
             for (int i = 0; i < instructionQueueArray.Length; ++i)
@@ -105,6 +114,8 @@ namespace MipSim
                     _isStalled = true;
                     break;
                 }
+
+                AddExecutionRecord(instruction);
 
                 //Mark register as awaiting values
                 if (instruction.WriteAwaiting != -1)
@@ -148,6 +159,28 @@ namespace MipSim
                 PC.Advance();
 
             _clockCycle++;
+        }
+
+        public void AddExecutionRecord(Instruction instruction)
+        {
+            switch (instruction.RelativeClock)
+            {
+                case 0:
+                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instruction.GetFetch(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    break;
+                case 1:
+                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, instruction.GetDecode(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    break;
+                case 2:
+                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, instruction.GetExecute(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    break;
+                case 3:
+                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, instruction.GetMem(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    break;
+                case 4:
+                    ExecutionRecords[_clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, instruction.GetWriteback(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    break;
+            }
         }
 
         public int Load(int address)

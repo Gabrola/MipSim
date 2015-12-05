@@ -59,6 +59,7 @@
     <Compile Include="InstructionTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataHazardsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MipSim.csproj">

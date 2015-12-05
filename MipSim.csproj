@@ -48,6 +48,9 @@
     <Compile Include="CPUComponents\GenericMemory.cs" />
     <Compile Include="CPUComponents\InstructionMemory.cs" />
     <Compile Include="CPUComponents\ProgramCounter.cs" />
+    <Compile Include="ExecutionRecord.cs" />
+    <Compile Include="ExecutionRecordList.cs" />
+    <Compile Include="ExecutionType.cs" />
     <Compile Include="Instructions\Add.cs" />
     <Compile Include="GUI.cs">
       <SubType>Form</SubType>
