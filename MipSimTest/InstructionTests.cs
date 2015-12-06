@@ -270,5 +270,36 @@ namespace MipSimTest
             //Test value inside register file
             Assert.AreEqual(1774300673, cpu.RegRead(1));
         }
+
+        [TestMethod]
+        public void TestSlt()
+        {
+            var cpu = new CPU();
+
+            //Set initial values in register file
+            cpu.RegWrite(2, 100);
+            cpu.RegWrite(3, 200);
+
+            var instructionAdd = new Slt("slt $1, $2, $3", 0, 1, 2, 3);
+            cpu.AddInstruction(instructionAdd);
+
+            cpu.RunClock();
+            Assert.AreEqual("slt $1, $2, $3", instructionAdd.GetFetch(), false);
+
+            cpu.RunClock();
+            Assert.AreEqual("Slt: rd = $1, rs = $2, rt = $3", instructionAdd.GetDecode(), false);
+
+            cpu.RunClock();
+            Assert.AreEqual("Slt 100 < 200 = 1", instructionAdd.GetExecute(), false);
+
+            cpu.RunClock();
+            Assert.AreEqual("None", instructionAdd.GetMem(), false);
+
+            cpu.RunClock();
+            Assert.AreEqual("Register $1 <= 1", instructionAdd.GetWriteback(), false);
+
+            //Test value inside register file
+            Assert.AreEqual(1, cpu.RegRead(1));
+        }
     }
 }
