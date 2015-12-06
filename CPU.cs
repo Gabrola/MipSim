@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MipSim.CPUComponents;
 using MipSim.Instructions;
 
@@ -6,31 +7,31 @@ namespace MipSim
 {
     public class CPU
     {
-        private readonly GenericMemory RegisterFile;
-        private readonly GenericMemory DataMemory;
-        private readonly ProgramCounter PC;
-        private readonly InstructionMemory Instructions;
-        private readonly ProcedureStack Stack;
+        private readonly GenericMemory _registerFile;
+        private readonly GenericMemory _dataMemory;
+        private readonly ProgramCounter _pc;
+        private readonly InstructionMemory _instructions;
+        private readonly ProcedureStack _stack;
 
         public int ClockCycle { get; private set; }
         private int _instructionExecution;
         private bool _isStalled;
 
-        private readonly Queue<Instruction> InstructionQueue;
-        private readonly HashSet<int> AwaitingRegisters;
-        private readonly Dictionary<int, int> ForwardedRegisters;
-        private readonly Dictionary<int, int> InstructionExecutionDictionary;
+        private readonly Queue<Instruction> _instructionQueue;
+        private readonly HashSet<int> _awaitingRegisters;
+        private readonly Dictionary<int, int> _forwardedRegisters;
+        private readonly Dictionary<int, int> _instructionExecutionDictionary;
         public readonly List<ExecutionRecordList> ExecutionRecords; 
 
         public static CPU Instance;
 
         public CPU()
         {
-            RegisterFile = new GenericMemory(16);
-            DataMemory = new GenericMemory(16);
-            PC = new ProgramCounter();
-            Instructions = new InstructionMemory();
-            Stack = new ProcedureStack();
+            _registerFile = new GenericMemory(16);
+            _dataMemory = new GenericMemory(16);
+            _pc = new ProgramCounter();
+            _instructions = new InstructionMemory();
+            _stack = new ProcedureStack();
 
             IsReady = false;
 
@@ -38,13 +39,13 @@ namespace MipSim
             _instructionExecution = 0;
             _isStalled = false;
 
-            InstructionQueue = new Queue<Instruction>();
-            AwaitingRegisters = new HashSet<int>();
-            ForwardedRegisters = new Dictionary<int, int>();
-            InstructionExecutionDictionary = new Dictionary<int, int>();
+            _instructionQueue = new Queue<Instruction>();
+            _awaitingRegisters = new HashSet<int>();
+            _forwardedRegisters = new Dictionary<int, int>();
+            _instructionExecutionDictionary = new Dictionary<int, int>();
             ExecutionRecords = new List<ExecutionRecordList>();
 
-            RegisterFile.Write(0, 0);
+            _registerFile.Write(0, 0);
 
             Instance = this;
         }
@@ -59,7 +60,7 @@ namespace MipSim
             {
                 try
                 {
-                    Instructions.Add(Parser.ParseInstruction(code[i], i));
+                    _instructions.Add(Parser.ParseInstruction(code[i], i));
                 }
                 catch (ParserException e)
                 {
@@ -75,27 +76,27 @@ namespace MipSim
 
         public void AddInstruction(Instruction instruction)
         {
-            Instructions.Add(instruction);
+            _instructions.Add(instruction);
             IsReady = true;
         }
 
         public void RunClock()
         {
             //Finished running if PC has exceeded instructions and all previous instructions have already finished running (determined by empty instruction queue)
-            if(!IsReady || (PC.ArrayCounter >= Instructions.Count && InstructionQueue.Count == 0))
+            if(!IsReady || (_pc.ArrayCounter >= _instructions.Count && _instructionQueue.Count == 0))
                 return;
 
-            AwaitingRegisters.Clear();
-            ForwardedRegisters.Clear();
+            _awaitingRegisters.Clear();
+            _forwardedRegisters.Clear();
 
-            if (PC.ArrayCounter < Instructions.Count && !_isStalled)
+            if (_pc.ArrayCounter < _instructions.Count && !_isStalled)
             {
-                Instructions[PC.ArrayCounter].Initialize(ClockCycle);
-                InstructionQueue.Enqueue(Instructions[PC.ArrayCounter]);
-                InstructionExecutionDictionary[Instructions[PC.ArrayCounter].InstructionNumber] = _instructionExecution++;
+                _instructions[_pc.ArrayCounter].Initialize(ClockCycle);
+                _instructionQueue.Enqueue(_instructions[_pc.ArrayCounter]);
+                _instructionExecutionDictionary[_instructions[_pc.ArrayCounter].InstructionNumber] = _instructionExecution++;
             }
 
-            Instruction[] instructionQueueArray = InstructionQueue.ToArray();
+            Instruction[] instructionQueueArray = _instructionQueue.ToArray();
 
             bool isJumpTaken = false;
             int jumpIndex = 0;
@@ -119,11 +120,11 @@ namespace MipSim
 
                 //Mark register as awaiting values
                 if (instruction.WriteAwaiting != -1)
-                    AwaitingRegisters.Add(instruction.WriteAwaiting);
+                    _awaitingRegisters.Add(instruction.WriteAwaiting);
 
                 //Add forwarded values
                 if (instruction.ForwardedRegister.HasValue)
-                    ForwardedRegisters[instruction.WriteAwaiting] = instruction.ForwardedRegister.Value;
+                    _forwardedRegisters[instruction.WriteAwaiting] = instruction.ForwardedRegister.Value;
 
                 if(instruction.ClearAwaiting)
                     instruction.ClearAwaits();
@@ -134,7 +135,7 @@ namespace MipSim
 
                     if (jumpData.IsJumpTaken)
                     {
-                        PC.Jump(jumpData);
+                        _pc.Jump(jumpData);
                         isJumpTaken = true;
                         jumpIndex = i;
                     }
@@ -144,19 +145,19 @@ namespace MipSim
             //Discards instructions after jump or branch statement
             if (isJumpTaken)
             {
-                InstructionQueue.Clear();
+                _instructionQueue.Clear();
 
                 for(int i = 0; i <= jumpIndex; ++i)
-                    InstructionQueue.Enqueue(instructionQueueArray[i]);
+                    _instructionQueue.Enqueue(instructionQueueArray[i]);
             }
 
             //Dequeue finished instructions
             if (instructionQueueArray[0].RelativeClock == 4)
-                InstructionQueue.Dequeue();
+                _instructionQueue.Dequeue();
 
             //If no jumps were taken advance program counter by 4
             if (!isJumpTaken && !_isStalled)
-                PC.Advance();
+                _pc.Advance();
 
             ClockCycle++;
         }
@@ -166,76 +167,79 @@ namespace MipSim
             switch (instruction.RelativeClock)
             {
                 case 0:
-                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instruction.GetFetch(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instruction.GetFetch(), _instructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 1:
-                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Decode, instruction.GetDecode(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Decode, instruction.GetDecode(), _instructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 2:
-                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Execute, instruction.GetExecute(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Execute, instruction.GetExecute(), _instructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 3:
-                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Memory, instruction.GetMem(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Memory, instruction.GetMem(), _instructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
                 case 4:
-                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, instruction.GetWriteback(), InstructionExecutionDictionary[instruction.InstructionNumber]));
+                    ExecutionRecords[ClockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, instruction.GetWriteback(), _instructionExecutionDictionary[instruction.InstructionNumber]));
                     break;
             }
         }
 
         public int Load(int address)
         {
-            return DataMemory.Read(address >> 2);
+            return _dataMemory.Read(address >> 2);
         }
 
         public void Store(int address, int value)
         {
-            DataMemory.Write(address >> 2, value);
+            _dataMemory.Write(address >> 2, value);
         }
 
         public int RegRead(int register)
         {
-            return RegisterFile.Read(register);
+            return _registerFile.Read(register);
         }
 
         public void RegWrite(int register, int value)
         {
-            RegisterFile.Write(register, value);
+            if(register == 0)
+                throw new UnauthorizedAccessException();
+
+            _registerFile.Write(register, value);
         }
 
         public bool IsRegisterReady(int register)
         {
-            return !AwaitingRegisters.Contains(register);
+            return !_awaitingRegisters.Contains(register);
         }
 
         public bool IsRegisterForwarded(int register)
         {
-            return ForwardedRegisters.ContainsKey(register);
+            return _forwardedRegisters.ContainsKey(register);
         }
 
         public int GetForwardedRegister(int register)
         {
-            return ForwardedRegisters[register];
+            return _forwardedRegisters[register];
         }
 
         public void StackPush(int address)
         {
-            Stack.Push(address);
+            _stack.Push(address);
         }
 
         public int StackPop()
         {
-            return Stack.Pop();
+            return _stack.Pop();
         }
 
         public int StackPeek()
         {
-            return Stack.Peek();
+            return _stack.Peek();
         }
 
         public int GetPC()
         {
-            return PC.RealCounter;
+            return _pc.RealCounter;
         }
     }
 }
