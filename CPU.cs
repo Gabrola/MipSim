@@ -83,11 +83,11 @@ namespace MipSim
             IsReady = true;
         }
 
-        public void RunClock()
+        public bool RunClock()
         {
             //Finished running if PC has exceeded instructions and all previous instructions have already finished running (determined by empty instruction queue)
             if(!IsReady || (_pc.ArrayCounter >= _instructions.Count && _instructionQueue.Count == 0))
-                return;
+                return false;
 
             _awaitingRegisters.Clear();
             _forwardedRegisters.Clear();
@@ -164,6 +164,8 @@ namespace MipSim
                 _pc.Advance();
 
             ClockCycle++;
+
+            return true;
         }
 
         public void AddExecutionRecord(Instruction instruction)

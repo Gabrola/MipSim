@@ -22,10 +22,10 @@ namespace MipSim
             fileLines = new string[0];
 
             InitializeComponent();
-            Intialize();
+            Initialize();
         }
 
-        private void Intialize()
+        private void Initialize()
         {
             _cpu = new CPU();
 
@@ -60,6 +60,13 @@ namespace MipSim
                     beginToolStripMenuItem.Enabled = true;
                     stepToolStripMenuItem.Enabled = true;
                     runToolStripMenuItem.Enabled = true;
+
+                    listBox1.Items.Clear();
+
+                    foreach(string instruction in fileLines)
+                    {
+                        listBox1.Items.Add(instruction.Trim());
+                    }
                 }
             }
         }
@@ -73,7 +80,7 @@ namespace MipSim
                 //Ignore blank lines
                 fileLines = fileLines.Where(line => line.Trim() != "").ToArray();
 
-                Intialize();
+                Initialize();
             }
         }
 
@@ -199,6 +206,58 @@ namespace MipSim
             tableLayoutPanel1.RowCount++;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 56F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
+        }
+
+        private void beginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Initialize();
+        }
+
+        private void stepToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(_cpu.RunClock())
+            {
+                var exec = _cpu.ExecutionRecords[_cpu.ExecutionRecords.Count - 1];
+
+                int clockCycle = _cpu.ClockCycle - 1;
+
+                foreach(var execRecord in exec)
+                {
+                    var btn = new Button { Location = new Point(3, 3), Size = new Size(50, 50) };
+
+                    switch (execRecord.Type)
+                    {
+                        case ExecutionType.Fetch:
+                            btn.Text = "IF";
+                            break;
+                        case ExecutionType.Decode:
+                            btn.Text = "ID";
+                            break;
+                        case ExecutionType.Execute:
+                            btn.Text = "EX";
+                            break;
+                        case ExecutionType.Memory:
+                            btn.Text = "MEM";
+                            break;
+                        case ExecutionType.Writeback:
+                            btn.Text = "WB";
+                            break;
+                    }
+
+                    btn.UseVisualStyleBackColor = true;
+                    btn.Click += (o, ea) =>
+                    {
+                        MessageBox.Show(Enum.GetName(typeof(ExecutionType), execRecord.Type) + ": " + execRecord.Value);
+                    };
+
+                    tableLayoutPanel1.Controls.Add(btn, clockCycle, execRecord.ExecutionNumber);
+                }
+
+                tableLayoutPanel1.ColumnCount++;
+                tableLayoutPanel1.RowCount++;
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 56F));
+                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
+            }
         }
     }
 }

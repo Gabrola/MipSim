@@ -2,7 +2,7 @@ namespace MipSim.Instructions
 {
     public class Addi : Instruction
     {
-        private readonly int _rd;
+        private readonly int _rt;
         private readonly int _rs;
         private readonly int _immediate;
 
@@ -10,10 +10,10 @@ namespace MipSim.Instructions
 
         private int _result;
 
-        public Addi(string instr, int instructionNumber, int rd, int rs, int immediate)
+        public Addi(string instr, int instructionNumber, int rt, int rs, int immediate)
             : base(instr, instructionNumber)
         {
-            _rd = rd;
+            _rt = rt;
             _rs = rs;
             _immediate = immediate;
         }
@@ -27,7 +27,7 @@ namespace MipSim.Instructions
 
         public override bool Execute()
         {
-            WriteAwaiting = _rd;
+            WriteAwaiting = _rt;
 
             //Some previous instruction has not written value to register yet
             if (!CPU.Instance.IsRegisterReady(_rs))
@@ -52,7 +52,7 @@ namespace MipSim.Instructions
 
         public override void WriteBack()
         {
-            CPU.Instance.RegWrite(_rd, _result);
+            CPU.Instance.RegWrite(_rt, _result);
             ClearAwaiting = true;
         }
 
@@ -68,7 +68,7 @@ namespace MipSim.Instructions
 
         public override string GetWriteback()
         {
-            return string.Format("Register ${0} <= {1}", _rd, _result);
+            return string.Format("Register ${0} <= {1}", _rt, _result);
         }
 
         public override string GetInstructionType()
@@ -78,7 +78,7 @@ namespace MipSim.Instructions
 
         public override string GetDecodeFields()
         {
-            return string.Format("rd = ${0}, rs = ${1}, imm = {2}", _rd, _rs, _immediate);
+            return string.Format("rt = ${0}, rs = ${1}, imm = {2}", _rt, _rs, _immediate);
         }
     }
 }
