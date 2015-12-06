@@ -21,7 +21,9 @@ namespace MipSim
         private readonly HashSet<int> _awaitingRegisters;
         private readonly Dictionary<int, int> _forwardedRegisters;
         private readonly Dictionary<int, int> _instructionExecutionDictionary;
-        public readonly List<ExecutionRecordList> ExecutionRecords; 
+        public readonly List<ExecutionRecordList> ExecutionRecords;
+
+        public readonly BTB Predictor;
 
         public static CPU Instance;
 
@@ -44,6 +46,7 @@ namespace MipSim
             _forwardedRegisters = new Dictionary<int, int>();
             _instructionExecutionDictionary = new Dictionary<int, int>();
             ExecutionRecords = new List<ExecutionRecordList>();
+            Predictor = new BTB();
 
             _registerFile.Write(0, 0);
 
@@ -136,6 +139,7 @@ namespace MipSim
                     if (jumpData.IsJumpTaken)
                     {
                         _pc.Jump(jumpData);
+                        instruction.JumpData.IsJumpTaken = false;
                         isJumpTaken = true;
                         jumpIndex = i;
                     }

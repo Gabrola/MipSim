@@ -10,6 +10,8 @@
 
         public int ClockCycle { get; private set; }
 
+        public int PC { get; private set; }
+
         protected Instruction(string instr, int instructionNumber)
         {
             InstrString = instr;
@@ -37,7 +39,7 @@
             switch (++RelativeClock)
             {
                 default:
-                    //Instruction Fetch
+                    PC = CPU.Instance.GetPC() >> 2;
                     return true;
 
                 case 1:
