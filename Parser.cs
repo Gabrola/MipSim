@@ -12,10 +12,13 @@ namespace MipSim
     {
         public static Instruction ParseInstruction(string instruction, int instructionNumber)
         {
-            //TODO: Konsowa and Hazem
             //Patterns for all possible instructions
             string[] patterns = { 
-                "^(add|xor|slt) (\\$([0-9]|[1-2][0-9]|3[0-1])),\\s?(\\$([0-9]|[1-2][0-9]|3[0-1])),\\s?(\\$([0-9]|[1-2][0-9]|3[0-1]))$",
+                //Using @ before the string disables string character escaping preventing the need to use double \ to escape regex characters
+                //Rd is limited 1-15 since we shouldn't be able to write to $0
+                @"^(add|xor|slt) \$([1-9]|1[0-5]),\s?\$([0-9]|1[0-5]),\s?\$([0-9]|1[0-5])$",
+
+                //TODO: Do the same as the above pattern
                 "^addi (\\$([0-9]|[1-2][0-9]|3[0-1])),\\s?(\\$([0-9]|[1-2][0-9]|3[0-1])),\\s?[0-9]+$",
                 "^(sw|lw) (\\$([0-9]|[1-2][0-9]|3[0-1])),\\s?[0-9]+\\((\\$([0-9]|[1-2][0-9]|3[0-1]))\\)$",
                 "^(j|jal|jp) (([0-9]*[A-Za-z]*)+|[A-Za-z]+[0-9]*)$",
@@ -24,20 +27,54 @@ namespace MipSim
                 "^rp$"
             };
 
+            instruction = instruction.ToLower().Trim();
+
             //Syntax check
-            bool validInsruction = false;
+            //bool validInsruction = false;
+
             for (int i = 0; i < patterns.Length; i++)
 			{
 			    var reg = new Regex(patterns[i]);
-                if(reg.IsMatch(instruction))
+			    var match = reg.Match(instruction);
+                if(match.Success)
                 {
-                    validInsruction = true;
+                    switch (i)
+                    {
+                        case 0:
+                            if(match.Groups[1].Value == "add")
+                                return new Add(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
+                            if (match.Groups[1].Value == "xor")
+                                return new Xor(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
+                            if (match.Groups[1].Value == "slt")
+                                return new Slt(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
+                            break;
+                        case 1:
+                            //TODO: Konsowa or Hazem
+                            break;
+                        case 2:
+                            //TODO: Konsowa or Hazem
+                            break;
+                        case 3:
+                            //TODO: Konsowa or Hazem
+                            break;
+                        case 4:
+                            //TODO: Konsowa or Hazem
+                            break;
+                        case 5:
+                            //TODO: Konsowa or Hazem
+                            break;
+                        case 6:
+                            return new ReturnProcedure(instruction, instructionNumber);
+                    }
+
+                    //validInsruction = true;
+
                     break;
                 }
 
 			}
 
-            string instrName = "";
+            /*string instrName = "";
 
             if (validInsruction)
 	        {
@@ -87,9 +124,9 @@ namespace MipSim
 		            default:
                         throw new ParserException("invalid instruction called " + instrName);
 	            }
-	        }
+	        }*/
 
-            throw new ParserException("invalid instruction called " + instrName);
+            throw new ParserException("Invalid instruction");
         }
     }
 }
