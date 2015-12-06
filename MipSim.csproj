@@ -52,10 +52,16 @@
     <Compile Include="ExecutionRecordList.cs" />
     <Compile Include="ExecutionType.cs" />
     <Compile Include="Instructions\Add.cs" />
-    <Compile Include="GUI.cs">
+    <Compile Include="UI\ChangeValueDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI.Designer.cs">
+    <Compile Include="UI\ChangeValueDialog.Designer.cs">
+      <DependentUpon>ChangeValueDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\GUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\GUI.Designer.cs">
       <DependentUpon>GUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Instructions\Addi.cs" />
@@ -76,7 +82,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Instructions\ReturnProcedure.cs" />
     <Compile Include="Instructions\SW.cs" />
-    <EmbeddedResource Include="GUI.resx">
+    <EmbeddedResource Include="UI\ChangeValueDialog.resx">
+      <DependentUpon>ChangeValueDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\GUI.resx">
       <DependentUpon>GUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
