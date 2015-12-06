@@ -17,7 +17,7 @@ namespace MipSim
                 //Using @ before the string disables string character escaping preventing the need to use double \ to escape regex characters
                 //Rd is limited 1-15 since we shouldn't be able to write to $0
                 @"^(add|xor|slt) \$([1-9]|1[0-5]),\s?\$([0-9]|1[0-5]),\s?\$([0-9]|1[0-5])$",
-                @"^addi \$([1-9]|1[0-5]),\s?\$([0-9]|1[0-5]),\s?[0-9]+$",
+                @"^addi \$([1-9]|1[0-5]),\s?\$([0-9]|1[0-5]),\s?([0-9]+)$",
                 @"^(sw|lw) \$([0-9]|1[0-5]),\s?([0-9]+)\(\$([1-9]|1[0-5])\)$",
                 "^(j|jal|jp) ([0-9]+)$",
                 @"^jr \$([0-9]|1[0-5])$",
@@ -46,7 +46,7 @@ namespace MipSim
                                 return new Slt(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
                             break;
                         case 1:
-                            return new Addi(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
+                            return new Addi(instruction, instructionNumber, int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value));
                         case 2:
                             if (match.Groups[1].Value == "sw")
                                 return new SW(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
@@ -62,7 +62,7 @@ namespace MipSim
                                 return new JumpProcedure(instruction, instructionNumber, int.Parse(match.Groups[2].Value));
                             break;
                         case 4:
-                            return new JR(instruction, instructionNumber, int.Parse(match.Groups[2].Value));
+                            return new JR(instruction, instructionNumber, int.Parse(match.Groups[1].Value));
                         case 5:
                             //TODO: Konsowa or Hazem
                             break;

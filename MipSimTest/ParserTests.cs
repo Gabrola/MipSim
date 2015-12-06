@@ -63,8 +63,8 @@ namespace MipSimTest
         {
             TestParse(new Dictionary<string, Tuple<string, string>>
             {
-                { "jal 10", Tuple.Create("JP", "imm = 10") },
-                { "JaL 25", Tuple.Create("JP", "imm = 25") },
+                { "jp 10", Tuple.Create("JP", "imm = 10") },
+                { "Jp 25", Tuple.Create("JP", "imm = 25") },
             });
         }
 
