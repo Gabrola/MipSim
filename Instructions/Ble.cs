@@ -4,6 +4,7 @@
     {
         private readonly int _rs;
         private readonly int _rt;
+        private readonly int _imm;
 
         private int _op1;
         private int _op2;
@@ -13,24 +14,33 @@
         public Ble(string instr, int instructionNumber, int rs, int rt, int imm)
             : base(instr, instructionNumber)
         {
-            JumpData = new JumpData { Type = JumpType.Branch, Address = imm, IsJumpTaken = false };
+            JumpData = new JumpData { Type = JumpType.JumpDirect, IsJumpTaken = false };
+
+            _rs = rs;
+            _rt = rt;
+            _imm = imm;
+        }
+
+        public override void Initialize(int executionOrder)
+        {
+            base.Initialize(executionOrder);
+
             _predictedTaken = false;
 
             int predictedJumpPC;
 
-            if(CPU.Instance.Predictor.PredictBranch(PC, out predictedJumpPC))
+            if (CPU.Instance.Predictor.PredictBranch(PC, out predictedJumpPC))
             {
                 JumpData.IsJumpTaken = true;
                 JumpData.Address = predictedJumpPC;
                 _predictedTaken = true;
             }
-
-            _rs = rs;
-            _rt = rt;
         }
 
         public override bool Decode()
         {
+            JumpData.Address = PC + ((_imm + 1) << 2);
+
             _op1 = CPU.Instance.RegRead(_rs);
             _op2 = CPU.Instance.RegRead(_rt);
 
@@ -87,7 +97,7 @@
 
         public override string GetExecute()
         {
-            return "None";
+            return string.Format("Ble {0} <= {1} = {2}", _op1, _op2, _op1 <= _op2);
         }
 
         public override string GetMem()
@@ -107,7 +117,7 @@
 
         public override string GetDecodeFields()
         {
-            return string.Format("imm = {0}", JumpData.Address);
+            return string.Format("rs = ${0}, rt = ${1}, imm = {2}", _rs, _rt, _imm);
         }
     }
 }

@@ -23,8 +23,8 @@ namespace MipSimTest
         {
             TestParse(new Dictionary<string, Tuple<string, string>>
             {
-                { "addi $1, $2, 3312", Tuple.Create("Addi", "rd = $1, rs = $2, imm = 3312") },
-                { "Addi $1,$2,10000", Tuple.Create("Addi", "rd = $1, rs = $2, imm = 10000") },
+                { "addi $1, $2, 3312", Tuple.Create("Addi", "rt = $1, rs = $2, imm = 3312") },
+                { "Addi $1,$2,10000", Tuple.Create("Addi", "rt = $1, rs = $2, imm = 10000") },
             });
         }
 

@@ -1,6 +1,8 @@
-﻿namespace MipSim.Instructions
+﻿using System;
+
+namespace MipSim.Instructions
 {
-    public abstract class Instruction
+    public abstract class Instruction : ICloneable
     {
         protected string InstrString;
 
@@ -8,7 +10,7 @@
 
         public int InstructionNumber { get; private set; }
 
-        public int ClockCycle { get; private set; }
+        public int ExecutionOrder { get; private set; }
 
         public int PC { get; private set; }
 
@@ -23,12 +25,12 @@
             ClearAwaiting = false;
         }
 
-        public void Initialize(int clockCycle)
+        public virtual void Initialize(int executionOrder)
         {
             RelativeClock = -1;
             WriteAwaiting = -1;
             ForwardedRegister = null;
-            ClockCycle = clockCycle;
+            ExecutionOrder = executionOrder;
             if (JumpData != null)
                 JumpData.IsJumpTaken = false;
         }
@@ -110,5 +112,10 @@
         public int? ForwardedRegister { get; protected set; }
 
         public bool ClearAwaiting { get; set; }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }

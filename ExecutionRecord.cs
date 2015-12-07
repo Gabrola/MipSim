@@ -1,16 +1,20 @@
-﻿namespace MipSim
+﻿using MipSim.Instructions;
+
+namespace MipSim
 {
     public struct ExecutionRecord
     {
         public readonly ExecutionType Type;
         public readonly string Value;
         public readonly int ExecutionNumber;
+        public readonly Instruction Instruction;
 
-        public ExecutionRecord(ExecutionType type, string value, int executionNumber)
+        public ExecutionRecord(ExecutionType type, string value, int executionNumber, Instruction instruction)
         {
             Type = type;
             Value = value;
             ExecutionNumber = executionNumber;
+            Instruction = instruction;
         }
 
         public override bool Equals(object obj)

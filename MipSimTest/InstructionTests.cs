@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,26 +20,45 @@ namespace MipSimTest
             cpu.RegWrite(2, 10);
             cpu.RegWrite(3, 255);
 
-            var instructionAdd = new Add("add $1, $2, $3", 0, 1, 2, 3);
-            cpu.AddInstruction(instructionAdd);
+            const string instr = "add $1, $2, $3";
+            cpu.AddInstruction(new Add(instr, 0, 1, 2, 3));
+
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
-            Assert.AreEqual("add $1, $2, $3", instructionAdd.GetFetch(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Add: rd = $1, rs = $2, rt = $3", instructionAdd.GetDecode(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Add: rd = $1, rs = $2, rt = $3", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Add 10 + 255 = 265", instructionAdd.GetExecute(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "Add 10 + 255 = 265", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("None", instructionAdd.GetMem(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "None", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Register $1 <= 265", instructionAdd.GetWriteback(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $1 <= 265", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             //Test value inside register file
             Assert.AreEqual(265, cpu.RegRead(1));
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
 
         [TestMethod]
@@ -47,28 +67,47 @@ namespace MipSimTest
             var cpu = new CPU();
 
             //Set initial values in register file
-            cpu.RegWrite(2, 123456);
+            cpu.RegWrite(1, 123456);
 
-            var instructionAdd = new Addi("addi $1, $2, 123456", 0, 1, 2, 123456);
-            cpu.AddInstruction(instructionAdd);
+            const string instr = "addi $2, $1, 123456";
+            cpu.AddInstruction(new Addi(instr, 0, 2, 1, 123456));
 
-            cpu.RunClock();
-            Assert.AreEqual("addi $1, $2, 123456", instructionAdd.GetFetch(), false);
-
-            cpu.RunClock();
-            Assert.AreEqual("Addi: rd = $1, rs = $2, imm = 123456", instructionAdd.GetDecode(), false);
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
-            Assert.AreEqual("Add 123456 + 123456 = 246912", instructionAdd.GetExecute(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("None", instructionAdd.GetMem(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Addi: rt = $2, rs = $1, imm = 123456", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Register $1 <= 246912", instructionAdd.GetWriteback(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "Add 123456 + 123456 = 246912", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "None", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $2 <= 246912", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             //Test value inside register file
-            Assert.AreEqual(246912, cpu.RegRead(1));
+            Assert.AreEqual(246912, cpu.RegRead(2));
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
 
         [TestMethod]
@@ -97,34 +136,57 @@ namespace MipSimTest
         {
             var cpu = new CPU();
 
-            var instructionAdd = new Jal("jal 4", 0, 4);
+            const string instr = "jal 4";
 
-            cpu.AddInstruction(instructionAdd);
+            cpu.AddInstruction(new Jal(instr, 0, 4));
             cpu.AddInstruction(new Nop("nop", 0));
             cpu.AddInstruction(new Nop("nop", 0));
             cpu.AddInstruction(new Nop("nop", 0));
-            cpu.AddInstruction(new Nop("nop", 0)); //Should jump to this instruction
+            cpu.AddInstruction(new Nop("nop", 1)); //Should jump to this instruction
+
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
-            Assert.AreEqual("jal 4", instructionAdd.GetFetch(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Jal: imm = 4", instructionAdd.GetDecode(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Jal: imm = 4", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, "nop", 1, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             //Jump should have been taken
             Assert.AreEqual(4 << 2, cpu.GetPC());
 
             cpu.RunClock();
-            Assert.AreEqual("None", instructionAdd.GetExecute(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "None", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, "nop", 2, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("None", instructionAdd.GetMem(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "None", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Nop: ", 2, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Register $15 <= 4", instructionAdd.GetWriteback(), false); //4 = 1 << 2
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $15 <= 4", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "", 2, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             //Test value inside register file
             Assert.AreEqual(1 << 2, cpu.RegRead(15));
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
 
         [TestMethod]
@@ -195,26 +257,46 @@ namespace MipSimTest
             cpu.Store(5 << 2, 123456789);
             cpu.RegWrite(6, 4 << 2);
 
-            var instructionAdd = new LW("lw $5, 4($6)", 0, 5, 4, 6);
+            const string instr = "lw $5, 4($6)";
+            var instructionAdd = new LW(instr, 0, 5, 4, 6);
             cpu.AddInstruction(instructionAdd);
 
-            cpu.RunClock();
-            Assert.AreEqual("lw $5, 4($6)", instructionAdd.GetFetch(), false);
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
-            Assert.AreEqual("LW: rs = $6, rt = $5, imm = 4", instructionAdd.GetDecode(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("LW Address = 16 + 4 = 20", instructionAdd.GetExecute(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "LW: rs = $6, rt = $5, imm = 4", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Memory access result = 123456789", instructionAdd.GetMem(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "LW Address = 16 + 4 = 20", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Register $5 <= 123456789", instructionAdd.GetWriteback(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "Memory access result = 123456789", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $5 <= 123456789", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             //Test value inside register file
             Assert.AreEqual(123456789, cpu.RegRead(5));
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
 
         [TestMethod]
@@ -224,23 +306,41 @@ namespace MipSimTest
             cpu.RegWrite(5, 123456789);
             cpu.RegWrite(6, 4 << 2);
 
-            var instructionAdd = new SW("sw $5, 4($6)", 0, 5, 4, 6);
+            const string instr = "sw $5, 4($6)";
+
+            var instructionAdd = new SW(instr, 0, 5, 4, 6);
             cpu.AddInstruction(instructionAdd);
 
-            cpu.RunClock();
-            Assert.AreEqual("sw $5, 4($6)", instructionAdd.GetFetch(), false);
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
-            Assert.AreEqual("SW: rs = $6, rt = $5, imm = 4", instructionAdd.GetDecode(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("SW Address = 16 + 4 = 20", instructionAdd.GetExecute(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "SW: rs = $6, rt = $5, imm = 4", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Value written in memory = 123456789", instructionAdd.GetMem(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "SW Address = 16 + 4 = 20", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
-            //Test value inside memory file
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "Value written in memory = 123456789", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            //Test value inside register file
             Assert.AreEqual(123456789, cpu.Load((4 << 2) + 4));
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
 
         [TestMethod]
@@ -252,26 +352,45 @@ namespace MipSimTest
             cpu.RegWrite(2, 1565861035);
             cpu.RegWrite(3, 882150058);
 
-            var instructionAdd = new Xor("xor $1, $2, $3", 0, 1, 2, 3);
-            cpu.AddInstruction(instructionAdd);
+            const string instr = "xor $1, $2, $3";
+            cpu.AddInstruction(new Xor(instr, 0, 1, 2, 3));
+
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
-            Assert.AreEqual("xor $1, $2, $3", instructionAdd.GetFetch(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Xor: rd = $1, rs = $2, rt = $3", instructionAdd.GetDecode(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Xor: rd = $1, rs = $2, rt = $3", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Xor 1565861035 ^ 882150058 = 1774300673", instructionAdd.GetExecute(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "Xor 1565861035 ^ 882150058 = 1774300673", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("None", instructionAdd.GetMem(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "None", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Register $1 <= 1774300673", instructionAdd.GetWriteback(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $1 <= 1774300673", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             //Test value inside register file
             Assert.AreEqual(1774300673, cpu.RegRead(1));
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
 
         [TestMethod]
@@ -283,26 +402,139 @@ namespace MipSimTest
             cpu.RegWrite(2, 100);
             cpu.RegWrite(3, 200);
 
-            var instructionAdd = new Slt("slt $1, $2, $3", 0, 1, 2, 3);
-            cpu.AddInstruction(instructionAdd);
+            const string instr = "slt $1, $2, $3";
+            cpu.AddInstruction(new Slt(instr, 0, 1, 2, 3));
+
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
 
             cpu.RunClock();
-            Assert.AreEqual("slt $1, $2, $3", instructionAdd.GetFetch(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Slt: rd = $1, rs = $2, rt = $3", instructionAdd.GetDecode(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Slt: rd = $1, rs = $2, rt = $3", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Slt 100 < 200 = 1", instructionAdd.GetExecute(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "Slt 100 < 200 = 1", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("None", instructionAdd.GetMem(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Memory, "None", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             cpu.RunClock();
-            Assert.AreEqual("Register $1 <= 1", instructionAdd.GetWriteback(), false);
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Writeback, "Register $1 <= 1", 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
 
             //Test value inside register file
             Assert.AreEqual(1, cpu.RegRead(1));
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
+        }
+
+        [TestMethod]
+        public void TestBleTaken()
+        {
+            var cpu = new CPU();
+
+            //Set initial values in register file
+            cpu.RegWrite(1, 100);
+            cpu.RegWrite(2, 200);
+
+            const string instr = "ble $1, $2, 5";
+
+            cpu.AddInstruction(new Ble(instr, 0, 1, 2, 5));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Ble: rs = $1, rt = $2, imm = 5", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, "nop", 1, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "Ble 100 <= 200 = True", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Nop: ", 1, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, "nop", 2, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            Assert.AreEqual(6 << 2, cpu.GetPC());
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
+        }
+
+        [TestMethod]
+        public void TestBleNotTaken()
+        {
+            var cpu = new CPU();
+
+            //Set initial values in register file
+            cpu.RegWrite(1, 200);
+            cpu.RegWrite(2, 100);
+
+            const string instr = "ble $1, $2, 5";
+
+            cpu.AddInstruction(new Ble(instr, 0, 1, 2, 5));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+            cpu.AddInstruction(new Nop("nop", 0));
+
+            var expectedRecords = new List<ExecutionRecordList>();
+            int clockCycle = 0;
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, instr, 0, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Ble: rs = $1, rt = $2, imm = 5", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, "nop", 1, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            cpu.RunClock();
+            expectedRecords.Add(new ExecutionRecordList());
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Execute, "Ble 200 <= 100 = False", 0, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Decode, "Nop: ", 1, null));
+            expectedRecords[clockCycle].Add(new ExecutionRecord(ExecutionType.Fetch, "nop", 2, null));
+            clockCycle++;
+            Assert.IsTrue(expectedRecords.SequenceEqual(cpu.ExecutionRecords));
+
+            Assert.AreEqual(3 << 2, cpu.GetPC());
+            Assert.AreEqual(clockCycle, cpu.ClockCycle);
         }
     }
 }

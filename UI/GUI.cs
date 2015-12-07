@@ -69,6 +69,13 @@ namespace MipSim
                     }
                 }
             }
+
+            tableLayoutPanel1.RowStyles.Clear();
+            tableLayoutPanel1.ColumnStyles.Clear();
+            tableLayoutPanel1.Controls.Clear();
+
+            tableLayoutPanel1.RowCount = 0;
+            tableLayoutPanel1.ColumnCount = 0;
         }
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
@@ -169,6 +176,11 @@ namespace MipSim
         {
             int clockCycle = tableLayoutPanel1.ColumnCount - 1;
 
+            tableLayoutPanel1.ColumnCount++;
+            tableLayoutPanel1.RowCount++;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 56F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
+
             for (int i = 0; i < 5; i++)
             {
                 int row = clockCycle - i;
@@ -201,11 +213,6 @@ namespace MipSim
 
                 tableLayoutPanel1.Controls.Add(btn, clockCycle, row);
             }
-
-            tableLayoutPanel1.ColumnCount++;
-            tableLayoutPanel1.RowCount++;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 56F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
         }
 
         private void beginToolStripMenuItem_Click(object sender, EventArgs e)

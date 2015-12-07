@@ -33,9 +33,6 @@ namespace MipSim.CPUComponents
                 case JumpType.Jump:
                     _counter = (int)(_counter & 0xF0000000) | (jumpData.Address << 2);
                     break;
-                case JumpType.Branch:
-                    _counter = _counter + (jumpData.Address << 2);
-                    break;
                 case JumpType.JumpDirect:
                     _counter = jumpData.Address;
                     break;
