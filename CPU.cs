@@ -158,7 +158,7 @@ namespace MipSim
                 _instructionQueue.Dequeue();
 
             //If no jumps were taken advance program counter by 4
-            if (!isJumpTaken && !_isStalled)
+            if (!isJumpTaken && !_isStalled && _pc.ArrayCounter < _instructions.Count)
                 _pc.Advance();
 
             ClockCycle++;
@@ -244,6 +244,11 @@ namespace MipSim
         public int GetPC()
         {
             return _pc.RealCounter;
+        }
+
+        public int GetArrayPC()
+        {
+            return _pc.ArrayCounter;
         }
     }
 }

@@ -21,9 +21,9 @@
             _imm = imm;
         }
 
-        public override void Initialize(int executionOrder)
+        public override void Fetch()
         {
-            base.Initialize(executionOrder);
+            base.Fetch();
 
             _predictedTaken = false;
 

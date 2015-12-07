@@ -126,9 +126,6 @@ namespace MipSimTest
 
             //Jump should have been taken
             Assert.AreEqual(10 << 2, cpu.GetPC());
-
-            cpu.RunClock();
-            Assert.AreNotEqual(10 << 2, cpu.GetPC());
         }
 
         [TestMethod]

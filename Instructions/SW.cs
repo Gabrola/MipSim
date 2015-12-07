@@ -65,7 +65,7 @@
 
         public override string GetMem()
         {
-            return string.Format("Value written in memory = {0}", _data);
+            return string.Format("Memory #{0} <= {1}", _base + _offset, _data);
         }
 
         public override string GetWriteback()

@@ -35,13 +35,18 @@ namespace MipSim.Instructions
                 JumpData.IsJumpTaken = false;
         }
 
+        public virtual void Fetch()
+        {
+            PC = CPU.Instance.GetPC();
+        }
+
         //Returns false if needs to stall and true otherwise
         public bool AdvanceClock()
         {
             switch (++RelativeClock)
             {
                 default:
-                    PC = CPU.Instance.GetPC() >> 2;
+                    Fetch();
                     return true;
 
                 case 1:

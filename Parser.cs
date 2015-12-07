@@ -17,11 +17,11 @@ namespace MipSim
                 //Using @ before the string disables string character escaping preventing the need to use double \ to escape regex characters
                 //Rd is limited 1-15 since we shouldn't be able to write to $0
                 @"^(add|xor|slt) \$([1-9]|1[0-5]),\s?\$([0-9]|1[0-5]),\s?\$([0-9]|1[0-5])$",
-                @"^addi \$([1-9]|1[0-5]),\s?\$([0-9]|1[0-5]),\s?([0-9]+)$",
-                @"^(sw|lw) \$([0-9]|1[0-5]),\s?([0-9]+)\(\$([1-9]|1[0-5])\)$",
+                @"^addi \$([1-9]|1[0-5]),\s?\$([0-9]|1[0-5]),\s?(-?[0-9]+)$",
+                @"^(sw|lw) \$([0-9]|1[0-5]),\s?(-?[0-9]+)\(\$([0-9]|1[0-5])\)$",
                 "^(j|jal|jp) ([0-9]+)$",
                 @"^jr \$([0-9]|1[0-5])$",
-                @"^ble (\$([0-9]|1[0-5])),\s?\$([0-9]|1[0-5]),\s?([0-9]+)$",
+                @"^ble (\$([0-9]|1[0-5])),\s?\$([0-9]|1[0-5]),\s?(-?[0-9]+)$",
                 "^rp$"
             };
 
@@ -64,8 +64,7 @@ namespace MipSim
                         case 4:
                             return new JR(instruction, instructionNumber, int.Parse(match.Groups[1].Value));
                         case 5:
-                            //TODO: Konsowa or Hazem
-                            break;
+                            return new Ble(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
                         case 6:
                             return new ReturnProcedure(instruction, instructionNumber);
                     }
