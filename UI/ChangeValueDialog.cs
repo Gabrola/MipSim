@@ -32,5 +32,19 @@ namespace MipSim.UI
             DialogResult = DialogResult.Cancel;
             Close();
         }
+
+        private void ChangeValueDialog_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+            {
+                int retVal;
+                if (int.TryParse(textBox1.Text, out retVal))
+                {
+                    ReturnValue = retVal;
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+            }
+        }
     }
 }

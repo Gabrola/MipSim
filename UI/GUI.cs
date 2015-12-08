@@ -1,26 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MipSim.UI;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
-namespace MipSim
+namespace MipSim.UI
 {
     public partial class GUI : Form
     {
         private CPU _cpu;
-        private string[] fileLines;
+        private string[] _fileLines;
 
         public GUI()
         {
-            fileLines = new string[0];
+            _fileLines = new string[0];
 
             InitializeComponent();
             Initialize();
@@ -32,7 +28,7 @@ namespace MipSim
 
             listView1.Items.Clear();
             listView2.Items.Clear();
-            listBox1.Items.Clear();;
+            listView4.Items.Clear();;
 
             for (int i = 0; i < 16; i++)
             {
@@ -49,9 +45,9 @@ namespace MipSim
             listView1.Enabled = true;
             listView2.Enabled = true;
 
-            if (fileLines.Length > 0)
+            if (_fileLines.Length > 0)
             {
-                Dictionary<int, string> errors = _cpu.ParseCode(fileLines);
+                Dictionary<int, string> errors = _cpu.ParseCode(_fileLines);
                 
                 if (errors.Count > 0)
                 {
@@ -63,11 +59,11 @@ namespace MipSim
                     stepToolStripMenuItem.Enabled = true;
                     runToolStripMenuItem.Enabled = true;
 
-                    listBox1.Items.Clear();
+                    listView4.Items.Clear();
 
-                    foreach(string instruction in fileLines)
+                    foreach(string instruction in _fileLines)
                     {
-                        listBox1.Items.Add(instruction.Trim());
+                        listView4.Items.Add(instruction.Trim());
                     }
                 }
             }
@@ -84,10 +80,10 @@ namespace MipSim
         {
             if (File.Exists(openFileDialog1.FileName))
             {
-                fileLines = File.ReadAllLines(openFileDialog1.FileName);
+                _fileLines = File.ReadAllLines(openFileDialog1.FileName);
 
                 //Ignore blank lines
-                fileLines = fileLines.Where(line => line.Trim() != "").ToArray();
+                _fileLines = _fileLines.Where(line => line.Trim() != "").ToArray();
 
                 Initialize();
             }
@@ -106,6 +102,9 @@ namespace MipSim
 
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
+            if(listView1.SelectedItems.Count == 0)
+                return;
+
             var selectedItem = listView1.SelectedItems[0] as CustomListItem;
 
             if (selectedItem == null || selectedItem.Idx == 0)
@@ -174,11 +173,6 @@ namespace MipSim
             }
         }
 
-        private void beginToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Initialize();
-        }
-
         private void stepToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!Step())
@@ -189,11 +183,15 @@ namespace MipSim
         {
             toolStripStatusLabel4.Text = _cpu.GetPC().ToString();
 
-            listBox1.SelectedIndex = _cpu.GetArrayPC() >= listBox1.Items.Count ? listBox1.Items.Count - 1 : _cpu.GetArrayPC();
+            listView4.Items[_cpu.GetArrayPC() >= listView4.Items.Count ? listView4.Items.Count - 1 : _cpu.GetArrayPC()]
+                .Selected = true;
 
             if (_cpu.RunClock())
             {
                 var exec = _cpu.ExecutionRecords[_cpu.ExecutionRecords.Count - 1];
+
+                listView1.SelectedIndices.Clear();
+                listView2.SelectedIndices.Clear();
 
                 int clockCycle = _cpu.ClockCycle;
 
@@ -248,8 +246,7 @@ namespace MipSim
                                 int memValue = int.Parse(match2.Groups[2].Value);
 
                                 listView2.Items[memIndex].SubItems[1].Text = memValue.ToString();
-                                listView2.SelectedIndices.Clear();
-                                listView2.SelectedIndices.Add(memIndex);
+                                listView2.Items[memIndex].Selected = true;
                             }
 
                             break;
@@ -267,8 +264,7 @@ namespace MipSim
                                 int regValue = int.Parse(match.Groups[2].Value);
 
                                 listView1.Items[regNum].SubItems[1].Text = regValue.ToString();
-                                listView1.SelectedIndices.Clear();
-                                listView1.SelectedIndices.Add(regNum);
+                                listView1.Items[regNum].Selected = true;
                             }
 
                             break;
@@ -327,6 +323,14 @@ namespace MipSim
                 MessageBox.Show("Execution stopped after 100 clock cycles limit.");
             else
                 MessageBox.Show("Execution finished in " + _cpu.ClockCycle + " clock cycles");
+        }
+
+        private void listBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+        }
+
+        private void listBox1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
         }
     }
 }

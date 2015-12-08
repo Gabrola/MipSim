@@ -1,4 +1,4 @@
-﻿namespace MipSim
+﻿namespace MipSim.UI
 {
     partial class GUI
     {
@@ -67,8 +67,8 @@
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.listBox1 = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.listView4 = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -116,7 +116,7 @@
             // 
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
             this.runToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.runToolStripMenuItem.Text = "&Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
             // 
@@ -124,7 +124,7 @@
             // 
             this.stepToolStripMenuItem.Name = "stepToolStripMenuItem";
             this.stepToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
-            this.stepToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.stepToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.stepToolStripMenuItem.Text = "&Step";
             this.stepToolStripMenuItem.Click += new System.EventHandler(this.stepToolStripMenuItem_Click);
             // 
@@ -141,6 +141,7 @@
             this.columnHeader2});
             this.listView1.FullRowSelect = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(615, 27);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(124, 304);
@@ -166,6 +167,7 @@
             this.columnHeader4});
             this.listView2.FullRowSelect = true;
             this.listView2.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listView2.HideSelection = false;
             this.listView2.Location = new System.Drawing.Point(615, 337);
             this.listView2.Name = "listView2";
             this.listView2.Size = new System.Drawing.Size(124, 304);
@@ -265,25 +267,13 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.listBox1);
+            this.groupBox2.Controls.Add(this.listView4);
             this.groupBox2.Location = new System.Drawing.Point(12, 474);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(597, 169);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Instructions";
-            // 
-            // listBox1
-            // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.Enabled = false;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Items.AddRange(new object[] {
-            ""});
-            this.listBox1.Location = new System.Drawing.Point(3, 16);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(591, 150);
-            this.listBox1.TabIndex = 0;
             // 
             // tableLayoutPanel1
             // 
@@ -299,6 +289,19 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 304F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(597, 304);
             this.tableLayoutPanel1.TabIndex = 6;
+            // 
+            // listView4
+            // 
+            this.listView4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView4.Enabled = false;
+            this.listView4.HideSelection = false;
+            this.listView4.Location = new System.Drawing.Point(3, 16);
+            this.listView4.MultiSelect = false;
+            this.listView4.Name = "listView4";
+            this.listView4.Size = new System.Drawing.Size(591, 150);
+            this.listView4.TabIndex = 0;
+            this.listView4.UseCompatibleStateImageBehavior = false;
+            this.listView4.View = System.Windows.Forms.View.List;
             // 
             // GUI
             // 
@@ -353,8 +356,8 @@
         private System.Windows.Forms.ToolStripMenuItem stepToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ListView listView4;
     }
 }
 

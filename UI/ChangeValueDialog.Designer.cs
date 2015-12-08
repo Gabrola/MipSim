@@ -80,10 +80,12 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ChangeValueDialog";
             this.Text = "ChangeValueDialog";
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ChangeValueDialog_KeyUp);
             this.ResumeLayout(false);
             this.PerformLayout();
 

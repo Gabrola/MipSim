@@ -22,7 +22,8 @@ namespace MipSim
                 "^(j|jal|jp) ([0-9]+)$",
                 @"^jr \$([0-9]|1[0-5])$",
                 @"^ble (\$([0-9]|1[0-5])),\s?\$([0-9]|1[0-5]),\s?(-?[0-9]+)$",
-                "^rp$"
+                "^rp$",
+                "^nop$"
             };
 
             instruction = instruction.ToLower().Trim();
@@ -67,6 +68,8 @@ namespace MipSim
                             return new Ble(instruction, instructionNumber, int.Parse(match.Groups[2].Value), int.Parse(match.Groups[3].Value), int.Parse(match.Groups[4].Value));
                         case 6:
                             return new ReturnProcedure(instruction, instructionNumber);
+                        case 7:
+                            return new Nop(instruction, instructionNumber);
                     }
 
                     break;
